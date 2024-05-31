@@ -1,0 +1,21 @@
+# echo-server.py
+
+import socket
+
+HOST = "127.0.0.1"  # Standard loopback interface address (localhost)   
+PORT = 65432  # Port to listen on (non-privileged ports are > 1023)
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:   # Sock stream for TCP & AF_INET is the Internet address family for IPv4
+    s.bind((HOST, PORT))      # bind to combine the port and host for socket
+    s.listen()                # backlog parameter -> It specifies the number of unaccepted connections that the system will allow before refusing new connections.
+    conn, addr = s.accept()   # .accept() -> return value is a pair (conn, address) 
+                              # conn is a new socket object 
+                              # addr is the address bound to the socket 
+
+    with conn:                            
+        print(f"Connected by {addr}")     #prints address of address bound to the socket.
+        while True:                       #Infinite loop used to loop over blocking calls to conn.recv().
+            data = conn.recv(1024)        # If conn.recv() returns an empty bytes object, b'', that signals that the client closed the connection and the loop is terminated.
+            if not data:
+                break
+            conn.sendall(data)            #used for echo as in sending the same data back to the client.
