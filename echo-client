@@ -1,0 +1,17 @@
+# echo-client.py
+
+#In comparison to the server, the client is pretty simple. 
+#It creates a socket object, uses .connect() to connect to the server and calls s.sendall() to send its message.
+#Lastly, it calls s.recv() to read the server’s reply and then prints it.
+
+import socket
+
+HOST = "127.0.0.1"  # The server's hostname or IP address
+PORT = 65432  # The port used by the server
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:     # Sock stream for TCP & AF_INET is the Internet address family for IPv4
+    s.connect((HOST, PORT))                                      # .connect() to connect to the server
+    s.sendall(b"Hello, world")                                   # s.sendall() to send its message
+    data = s.recv(1024)                                          # s.recv() to read the server’s reply
+
+print(f"Received {data!r}")
