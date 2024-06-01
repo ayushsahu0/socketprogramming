@@ -1,3 +1,6 @@
+#Create a Python UDP client-server application where: The client sends integers to the server , The server responds with the English spelling of those integers.
+
+
 import socket
 from num2words import num2words     #Simple library that converts given integer into its spelling like 1 into one
 
