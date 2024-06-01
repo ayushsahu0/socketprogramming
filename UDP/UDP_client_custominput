@@ -1,3 +1,5 @@
+#Create a Python UDP client-server application where: The client sends integers to the server, The server responds with the English spelling of those integers.
+
 import socket
 
 UDP_IP = "127.0.0.1"        #IP Address of server
