@@ -1,0 +1,16 @@
+import socket
+
+UDP_IP = "127.0.0.1"        #IP Address of server
+UDP_PORT = 5005             #Port Address of server
+MESSAGE = input()      #message to be send
+
+print("UDP target IP: %s" % UDP_IP)
+print("UDP target port: %s" % UDP_PORT)
+print("message: %s" % MESSAGE)
+
+sock = socket.socket(socket.AF_INET, # Internet      #UDP -> socket.SOCK_DGRAM
+                     socket.SOCK_DGRAM) # UDP
+sock.sendto(MESSAGE.encode(), (UDP_IP, UDP_PORT))
+
+
+#No binding in case of client
