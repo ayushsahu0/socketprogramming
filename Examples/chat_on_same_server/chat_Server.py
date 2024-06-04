@@ -1,3 +1,5 @@
+# multiple client chat with each other through the same server.
+
 # server.py
 import socket
 import threading
