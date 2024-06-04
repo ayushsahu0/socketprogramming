@@ -24,7 +24,7 @@ def handle_client(client_socket, client_address):
 
             # Relay the message to the other clients
             for client in clients:
-                if client != client_socket:
+                if client != client_socket:    #This if statement ensures that the server does not send the message back to the client that sent it.
                     client.sendall(f"Message from {client_address}: {message}".encode('utf-8'))
         except:
             break
