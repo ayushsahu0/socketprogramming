@@ -1,0 +1,22 @@
+// Simply Blinks a Blue LED on the Esp 32 pin 2 for 1 sec and then a delay of 1 sec.
+
+#include <stdio.h>
+#include "freertos/FreeRTOS.h"
+#include "driver/gpio.h"
+#include "freertos/task.h"
+void app_main()
+{
+  gpio_set_direction(GPIO_NUM_2, GPIO_MODE_OUTPUT);  // Built-in LED on GPIO 0
+    while(1){
+        gpio_set_level(GPIO_NUM_2,0);
+        vTaskDelay(100);                        // Gives Delay 
+        gpio_set_level(GPIO_NUM_2,1);           // Set level for led start and stop 1 -> start or high 0 -> Stop or Low
+        vTaskDelay(100);
+    }
+}
+
+
+// How to run??
+// Run Commands 1.) idf.py build  2.) idf.py flash -p /dev/cu.usbserial-0001 (For Mac Users) 
+// To erase or stop the code flash -> 1.) esptool.py erase_flash
+     
