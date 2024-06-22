@@ -1,0 +1,100 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/types.h>
+#include<sys/socket.h>
+#include<netinet/in.h>
+#include <unistd.h>
+
+int main()
+{
+    char Servermessage[256]= "Welcome to My server\n";         // A welcome Message
+    printf("Test Message");
+
+    // Creating a Socket :)
+
+    int sockid = socket(AF_INET,SOCK_STREAM,0);     // 3 parameters 1.) address family -> Internet Protocol v4 
+    //2.) TCP almost always uses SOCK_STREAM and UDP uses SOCK_DGRAM
+    // 3.) Protocol usually 0 as default
+
+    // Now define the server Address
+    // Same as Client
+    // sockid returns -1 if failed 
+
+    if (sockid==-1)
+    {
+        printf("Socket Failed");
+    }
+    else 
+    {
+        printf("Socket Success");
+    }
+
+    struct sockaddr_in serverAddress ;    // Create a struct variable with the name "serverAddress"
+    serverAddress.sin_family= AF_INET;   // Internet protocol (AF_INET)
+    serverAddress.sin_port= htons(9002);    // htons() translates an unsigned short integer into network byte order
+    serverAddress.sin_addr.s_addr= INADDR_ANY ; // Any local Address
+
+    // Now Bind the socket
+    int status = bind(sockid,( struct sockaddr*) &serverAddress , sizeof(serverAddress));
+    //3 parameters 1.) sockid (socket descriptor) 
+    //2.) addrport
+    // 3.) size of addrport 
+    // status will return -1 if failed
+
+    if (status==-1)
+    {
+        printf("Socket Bind Failed");
+    }
+    else 
+    {
+        printf("Socket Bind Success");
+    }
+
+    int status_1 =listen(sockid,5);  // Instructs TCP protocol to listen for connections 
+    // will return -1 if failed
+
+    if (status_1==-1)
+    {
+        printf("Socket Listen Failed");
+    }
+    else 
+    {
+        printf("Socket Listen  Success");
+    }
+
+    // Starting the Accept 
+    // accept(socketWeAreAccepting,structuresClientIsConnectingFrom, Socket lenght restrict)
+
+    int client_socket = accept(sockid,NULL,NULL);
+
+    // will return -1 if failed
+
+    if (client_socket==-1)
+    {
+        printf("Socket Accept Failed");
+    }
+    else 
+    {
+        printf("Socket Accept  Success");
+    }
+
+    //sending data
+    // send(toWhom,Message,SizeOfMessage,FLAG); Flags -> Special Function usually 0
+
+    int send_ = send(client_socket,Servermessage,sizeof(Servermessage),0);
+
+    if (send_==-1)
+    {
+        printf("Socket Accept Failed");
+    }
+    else 
+    {
+        printf("Socket Accept  Success");
+    }
+
+
+    // Close the Socket 
+
+    close(sockid);
+    return 0;
+}
