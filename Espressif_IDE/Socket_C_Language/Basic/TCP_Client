@@ -1,0 +1,44 @@
+// adding headers 
+#include <stdio.h>
+#include <stdlib.h>
+//for socket and related functions
+#include <sys/types.h>
+#include <sys/socket.h>
+//for including structures which will store information needed
+#include <netinet/in.h>
+#include <unistd.h>
+#define SIZE 1000
+
+int main(){
+
+    int sockid=(AF_INET,SOCK_STREAM,0);
+    
+    // server address 
+    struct sockaddr_in serverAddress ;
+    serverAddress.sin_family=AF_INET;
+    serverAddress.sin_port= htons(9002);
+    serverAddress.sin_addr.s_addr= INADDR_ANY;
+
+    // communicates with listen 
+    int connect_ = connect(sockid, (struct sockaddr*) &serverAddress, sizeof(serverAddress));
+
+    if (connect_==-1)
+    {
+        printf("Socket connect Failed");
+    }
+    else 
+    {
+        printf("Socket connect Success");
+    }
+
+    char serverResponse[SIZE] ;
+    recv(sockid,&serverResponse , sizeof(serverResponse),0);
+      // (fromwhere,Message,SizeOfMessage,FLAG) The message will be stored in serverResponse 
+
+    printf("Ther server sent the data : %s", serverResponse);
+
+     //closing the socket
+    close(sockid);
+
+    return 0;
+}
