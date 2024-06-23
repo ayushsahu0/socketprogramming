@@ -2,8 +2,8 @@
    To Run this Firstly 1.) source ~/.bashrc 2.) get_idf 3.) idf.py menuconfig 
    4.) Change the serial Flash memory to 4mb 5.) Component Config -> ESP System Config -> Freq to 240 Mz
    5.) Got to Example Configuration and change the credentials of Wifi and Hotspot
-   6.)  idf.py build && idf.py flash monitor
-
+   6.)  idf.py build && idf.py flash monitor */
+/* STA and AP Modes */
 
 #include <string.h>
 #include "freertos/FreeRTOS.h"
