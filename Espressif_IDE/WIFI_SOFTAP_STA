@@ -3,7 +3,7 @@
    4.) Change the serial Flash memory to 4mb 5.) Component Config -> ESP System Config -> Freq to 240 Mz
    5.) Got to Example Configuration and change the credentials of Wifi and Hotspot
    6.)  idf.py build && idf.py flash monitor */
-/* STA and AP Modes */
+/* STA -> WiFi Connect and Disconnect and AP Modes -> Hotspot */
 
 #include <string.h>
 #include "freertos/FreeRTOS.h"
