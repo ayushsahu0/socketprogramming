@@ -154,3 +154,18 @@ void app_main(void)
 
     xTaskCreate(udp_client_task, "udp_client", 4096, NULL, 5, NULL); // Create the UDP client task
 }
+
+/* Expected Output :
+
+I (5345) esp_netif_handlers: example_netif_sta ip: XXX.XX.X.XX, mask: XXX.XXX.XXX.X, gw: XXX.XX.X.X
+I (5345) example_connect: Got IPv4 event: Interface "example_netif_sta" address: XXX.XX.X.XX
+I (5355) example_common: Connected to example_netif_sta
+I (5355) example_common: - IPv4 address: XXX.XX.X.XX,
+I (5365) example_common: - IPv6 address: XXXX:0000:0000:0000:XXXX:XXXX:XXXX:XXXX, type: ESP_IP6_ADDR_IS_LINK_LOCAL
+I (5375) example: ESP32 IP Address: XXX.XX.X.XX
+I (5375) example: Socket created and bound to port 3333, receiving from XXX.XX.X.XXX:3333
+I (5385) main_task: Returned from app_main()
+I (5645) example: Received 2 bytes from XXX.XX.X.XXX:
+I (5645) example: 32
+I (7695) example: Received 2 bytes from XXX.XX.X.XXX:
+I (7695) example: 13
