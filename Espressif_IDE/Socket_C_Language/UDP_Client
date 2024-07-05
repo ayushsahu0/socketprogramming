@@ -1,3 +1,5 @@
+/* UDP Client for sending a random no to a UDP Server */
+
 #include <string.h>
 #include <stdio.h>
 #include <sys/param.h>
@@ -15,11 +17,11 @@
 #include "lwip/sys.h"
 #include <lwip/netdb.h>
 
-
 #ifdef CONFIG_EXAMPLE_SOCKET_IP_INPUT_STDIN
 #include "addr_from_stdin.h"
 #endif
 
+// Define the IP address and port based on the configuration
 #if defined(CONFIG_EXAMPLE_IPV4)
 #define HOST_IP_ADDR CONFIG_EXAMPLE_IPV4_ADDR
 #elif defined(CONFIG_EXAMPLE_IPV6)
@@ -30,20 +32,20 @@
 
 #define PORT CONFIG_EXAMPLE_PORT
 
-static const char *TAG = "example";
-// static const char *payload = "Message from ESP32 ";
+static const char *TAG = "example"; // Tag for logging purposes
 
-
+// Function that runs the UDP client task
 static void udp_client_task(void *pvParameters)
 {
-    char rx_buffer[128];
-    char host_ip[] = HOST_IP_ADDR;
+    char rx_buffer[128]; // Buffer to hold received data
+    char host_ip[] = HOST_IP_ADDR; // Host IP address
     int addr_family = 0;
     int ip_protocol = 0;
 
     while (1) {
 
 #if defined(CONFIG_EXAMPLE_IPV4)
+        // Configure destination address for IPv4
         struct sockaddr_in dest_addr;
         dest_addr.sin_addr.s_addr = inet_addr(HOST_IP_ADDR);
         dest_addr.sin_family = AF_INET;
@@ -51,6 +53,7 @@ static void udp_client_task(void *pvParameters)
         addr_family = AF_INET;
         ip_protocol = IPPROTO_IP;
 #elif defined(CONFIG_EXAMPLE_IPV6)
+        // Configure destination address for IPv6
         struct sockaddr_in6 dest_addr = { 0 };
         inet6_aton(HOST_IP_ADDR, &dest_addr.sin6_addr);
         dest_addr.sin6_family = AF_INET6;
@@ -59,49 +62,49 @@ static void udp_client_task(void *pvParameters)
         addr_family = AF_INET6;
         ip_protocol = IPPROTO_IPV6;
 #elif defined(CONFIG_EXAMPLE_SOCKET_IP_INPUT_STDIN)
+        // Configure destination address from standard input
         struct sockaddr_storage dest_addr = { 0 };
         ESP_ERROR_CHECK(get_addr_from_stdin(PORT, SOCK_DGRAM, &ip_protocol, &addr_family, &dest_addr));
 #endif
 
+        // Create a socket
         int sock = socket(addr_family, SOCK_DGRAM, ip_protocol);
         if (sock < 0) {
             ESP_LOGE(TAG, "Unable to create socket: errno %d", errno);
             break;
         }
 
-        // Set timeout
+        // Set timeout for receiving data
         struct timeval timeout;
-        timeout.tv_sec = 10;
+        timeout.tv_sec = 10; // Set timeout to 10 seconds
         timeout.tv_usec = 0;
-        setsockopt (sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof timeout);
+        setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof timeout);
 
         ESP_LOGI(TAG, "Socket created, sending to %s:%d", HOST_IP_ADDR, PORT);
 
         while (1) {
+            // Generate a random number
+            uint32_t random_no = esp_random();
+            char payload[4];
 
-            uint32_t random_no= esp_random();    //  Generate a random no.
-            char payload[4];                    
-            // Convert the random number to a string
-            // size max can be  : 10 (4,294,967,295) + string 
+            // Convert the random number to a string (2 digits)
+            uint8_t rem = random_no % 100;
+            ESP_LOGI(TAG, "The Random no is: %u", rem);
 
-            uint8_t rem = random_no%100;
-            ESP_LOGI(TAG, "The Random no is:  %u",rem);
-            snprintf(payload, sizeof(payload), "%u", rem);   // int snprintf(char *str, size_t size, const char *format, …) 
-            // included in stdio.h header file    %lu -> long unsigned int
-            // snprintf() function formats and stores a series of characters and values in the array buffer
-            // char payload[4];
-            //esp_fill_random(payload,4);
-            //ESP_LOGI(TAG, "The Random no is:  %u",payload);
-            
+            snprintf(payload, sizeof(payload), "%u", rem); // Convert number to string
+
+            // Send the payload to the destination address
             int err = sendto(sock, payload, strlen(payload), 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
             if (err < 0) {
                 ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
                 break;
             }
-            ESP_LOGI(TAG, "Message send is %s",payload);
+            ESP_LOGI(TAG, "Message sent: %s", payload);
 
             struct sockaddr_storage source_addr; // Large enough for both IPv4 or IPv6
             socklen_t socklen = sizeof(source_addr);
+
+            // Receive response (optional)
             // int len = recvfrom(sock, rx_buffer, sizeof(rx_buffer) - 1, 0, (struct sockaddr *)&source_addr, &socklen);
 
             // // Error occurred during receiving
@@ -111,7 +114,7 @@ static void udp_client_task(void *pvParameters)
             // }
             // // Data received
             // else {
-            //     rx_buffer[len] = 0; // Null-terminate whatever we received and treat like a string
+            //     rx_buffer[len] = 0; // Null-terminate the received data
             //     ESP_LOGI(TAG, "Received %d bytes from %s:", len, host_ip);
             //     ESP_LOGI(TAG, "%s", rx_buffer);
             //     if (strncmp(rx_buffer, "OK: ", 4) == 0) {
@@ -120,9 +123,11 @@ static void udp_client_task(void *pvParameters)
             //     }
             // }
 
+            // Delay for 2 seconds before sending the next message
             vTaskDelay(2000 / portTICK_PERIOD_MS);
         }
 
+        // Clean up the socket
         if (sock != -1) {
             ESP_LOGE(TAG, "Shutting down socket and restarting...");
             shutdown(sock, 0);
@@ -132,11 +137,28 @@ static void udp_client_task(void *pvParameters)
     vTaskDelete(NULL);
 }
 
+// Main function
 void app_main(void)
 {
-    ESP_ERROR_CHECK(nvs_flash_init());
-    ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
-    ESP_ERROR_CHECK(example_connect());
+    ESP_ERROR_CHECK(nvs_flash_init()); // Initialize NVS flash
+    ESP_ERROR_CHECK(esp_netif_init()); // Initialize network interface
+    ESP_ERROR_CHECK(esp_event_loop_create_default()); // Create default event loop
+
+    ESP_ERROR_CHECK(example_connect()); // Connect to Wi-Fi
+
+    // Log the IP address of the ESP32 device
+    esp_netif_ip_info_t ip_info;
+    esp_netif_t *netif = esp_netif_get_handle_from_ifkey("WIFI_STA_DEF");
+    if (netif) {
+        esp_netif_get_ip_info(netif, &ip_info);
+        ESP_LOGI(TAG, "ESP32 IP Address: " IPSTR, IP2STR(&ip_info.ip));
+    } else {
+        ESP_LOGE(TAG, "Failed to get netif handle");
+    }
+
+    // Log the IP address of the server
+    ESP_LOGI(TAG, "Server IP Address: %s", HOST_IP_ADDR);
+
+    // Create the UDP client task
     xTaskCreate(udp_client_task, "udp_client", 4096, NULL, 5, NULL);
 }
