@@ -162,3 +162,21 @@ void app_main(void)
     // Create the UDP client task
     xTaskCreate(udp_client_task, "udp_client", 4096, NULL, 5, NULL);
 }
+
+/* Expected Output :
+I (5365) example_common: Connected to example_netif_sta
+I (5375) example_common: - IPv4 address: XXX.XX.X.XXX,
+I (5375) example_common: - IPv6 address: XXXX:0000:0000:0000:XXXX:XXXX:XXXX:XXXX, type: ESP_IP6_ADDR_IS_LINK_LOCAL
+I (5385) example: ESP32 IP Address: XXX.XX.X.XXX
+I (5395) example: Server IP Address: XXX.XX.X.XX
+I (5405) example: Socket created, sending to XXX.XX.X.XXX:3333
+I (5405) example: The Random no is:  43
+I (5415) example: Message send is 43
+I (5415) main_task: Returned from app_main()
+I (7415) example: The Random no is:  83
+I (7415) example: Message send is 83
+I (9415) example: The Random no is:  49
+I (9415) example: Message send is 49
+I (11415) example: The Random no is:  59
+I (11415) example: Message send is 59
+*/
