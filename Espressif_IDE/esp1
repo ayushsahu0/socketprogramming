@@ -277,6 +277,10 @@ static void gattc_profile_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_
             ESP_LOGE(GATTC_TAG,"config mtu failed, error status = %x", param->cfg_mtu.status);
         }
         ESP_LOGI(GATTC_TAG, "ESP_GATTC_CFG_MTU_EVT, Status %d, MTU %d, conn_id %d", param->cfg_mtu.status, param->cfg_mtu.mtu, param->cfg_mtu.conn_id);
+        ESP_LOGI(GATTC_TAG, "write char success ");
+        udp_init();
+        udp_client_task();
+
         break;
     case ESP_GATTC_SEARCH_RES_EVT: {
         ESP_LOGI(GATTC_TAG, "SEARCH RES: conn_id = %x is primary service %d", p_data->search_res.conn_id, p_data->search_res.is_primary);
@@ -441,8 +445,6 @@ static void gattc_profile_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_
                                  (uint8_t *)&payload,
                                  ESP_GATT_WRITE_TYPE_RSP,
                                  ESP_GATT_AUTH_REQ_NONE);
-        udp_init();
-        udp_client_task();
         break;
     case ESP_GATTC_SRVC_CHG_EVT: {
         esp_bd_addr_t bda;
@@ -456,8 +458,7 @@ static void gattc_profile_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_
             ESP_LOGE(GATTC_TAG, "write char failed, error status = %x", p_data->write.status);
             break;
         }
-        ESP_LOGI(GATTC_TAG, "write char success ");
-
+        
         
 
     case ESP_GATTC_DISCONNECT_EVT:
@@ -652,4 +653,3 @@ void app_main(void)
     }
 
 }
-
