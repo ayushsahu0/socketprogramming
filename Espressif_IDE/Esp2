@@ -75,8 +75,6 @@ static const char *TAG = "example"; // Tag for logging purposes
 
 static void udp_client_task()
 {
-    char rx_buffer[128]; // Buffer to hold received data
-    char host_ip[] = HOST_IP_ADDR; // Host IP address
     int addr_family = 0;
     int ip_protocol = 0;
 
@@ -139,8 +137,6 @@ static void udp_client_task()
             }
             ESP_LOGI(TAG, "Message sent: %s", received_message_str);
 
-            struct sockaddr_storage source_addr; // Large enough for both IPv4 or IPv6
-            socklen_t socklen = sizeof(source_addr);
 
             // Receive response (optional)
             // int len = recvfrom(sock, rx_buffer, sizeof(rx_buffer) - 1, 0, (struct sockaddr *)&source_addr, &socklen);
