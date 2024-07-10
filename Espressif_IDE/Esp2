@@ -911,20 +911,3 @@ void app_main(void)
     
     return;
 }
-
-/* Expected Output :
-      I (1586760) GATTS_DEMO: ESP_GATTS_DISCONNECT_EVT, disconnect reason 0x8
-      I (1601600) GATTS_DEMO: ESP_GATTS_CONNECT_EVT, conn_id 0, remote b8:d6:1a:43:5b:62:
-      I (1601600) GATTS_DEMO: CONNECT_EVT, conn_id 0, remote b8:d6:1a:43:5b:62:
-      I (1601780) GATTS_DEMO: update connection params status = 0, min_int = 16, max_int = 32,conn_int = 32,latency = 0, timeout = 400
-      I (1603020) GATTS_DEMO: ESP_GATTS_MTU_EVT, MTU 500
-      I (1603030) GATTS_DEMO: ESP_GATTS_MTU_EVT, MTU 500
-      I (1603180) GATTS_DEMO: GATT_WRITE_EVT, conn_id 0, trans_id 2, handle 43
-      I (1603180) GATTS_DEMO: GATT_WRITE_EVT, value len 2, value :
-      I (1603190) GATTS_DEMO: 01 00 
-      I (1603190) GATTS_DEMO: notify enable
-      I (1603200) GATTS_DEMO: ESP_GATTS_CONF_EVT, status 0 attr_handle 42
-      I (1603260) GATTS_DEMO: GATT_WRITE_EVT, conn_id 0, trans_id 3, handle 42
-      I (1603260) GATTS_DEMO: GATT_WRITE_EVT, value len 2, value :
-      I (1603270) GATTS_DEMO: 70 
-*/
