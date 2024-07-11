@@ -75,6 +75,8 @@ static const char *TAG = "example"; // Tag for logging purposes
 
 static void udp_client_task()
 {
+    char rx_buffer[128]; // Buffer to hold received data
+    char host_ip[] = HOST_IP_ADDR; // Host IP address
     int addr_family = 0;
     int ip_protocol = 0;
 
@@ -137,6 +139,8 @@ static void udp_client_task()
             }
             ESP_LOGI(TAG, "Message sent: %s", received_message_str);
 
+            struct sockaddr_storage source_addr; // Large enough for both IPv4 or IPv6
+            socklen_t socklen = sizeof(source_addr);
 
             // Receive response (optional)
             // int len = recvfrom(sock, rx_buffer, sizeof(rx_buffer) - 1, 0, (struct sockaddr *)&source_addr, &socklen);
@@ -496,16 +500,30 @@ static void gatts_profile_a_event_handler(esp_gatts_cb_event_t event, esp_gatt_i
     case ESP_GATTS_WRITE_EVT: {
         ESP_LOGI(GATTS_TAG, "GATT_WRITE_EVT, conn_id %d, trans_id %" PRIu32 ", handle %d", param->write.conn_id, param->write.trans_id, param->write.handle);
         if (!param->write.is_prep){
-            ESP_LOGI(GATTS_TAG, "GATT_WRITE_EVT, value len %d, value :", param->write.len);
-            esp_log_buffer_hex(GATTS_TAG, param->write.value, param->write.len);
+            //ESP_LOGI(GATTS_TAG, "GATT_WRITE_EVT, value len %d, value :", param->write.len);
+            //esp_log_buffer_hex(GATTS_TAG, param->write.value, param->write.len);
             // Convert received message to string
            for (int i = 0; i < param->write.len; ++i) {
             snprintf(received_message_str + i * 2, 3, "%02x", param->write.value[i]);
         }
         received_message_str[param->write.len * 2] = '\0'; // Null-terminate the string
-
+        char extracted_chars[3];
+        if (strlen(received_message_str) >= 4) {
+        // Extract 1st and 3rd characters (indices 0 and 2 respectively)
+        extracted_chars[0] = received_message_str[1]; // 1st character
+        extracted_chars[1] = received_message_str[3]; // 3rd character
+        extracted_chars[2] = '\0'; // Null-terminate the output string
+        strcpy(received_message_str, extracted_chars);
+        }
+        else if (strlen(received_message_str) == 2)
+        {
+            extracted_chars[0] = received_message_str[1]; // 1st character
+            extracted_chars[1] = '\0'; // Null-terminate the output string
+        strcpy(received_message_str, extracted_chars);
+        }
+        
         ESP_LOGI(GATTS_TAG, "Received Message (String): %s", received_message_str);
-            udp_init();
+            //udp_init();
             udp_client_task();
             
 
@@ -842,7 +860,7 @@ static void gatts_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_t gatts_
 
 void app_main(void)
 {
-    
+    udp_init();
     esp_err_t ret;
 
     // Initialize NVS.
