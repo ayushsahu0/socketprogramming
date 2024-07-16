@@ -37,18 +37,17 @@
 
 #define PORT CONFIG_EXAMPLE_PORT
 
-static const char *TAG = "UDP_Server";
+#define TAG  "UDP_Server"
 
 static void udp_server_task()
 {
     char rx_buffer[128]; // Buffer to hold received data
     int addr_family = 0;
     int ip_protocol = 0;
-    const char *TAG = "example";
 
     // Client's IP address and port
-    char host_ip[] = HOST_IP_ADDR;
-    int client_port = 9999; // Port where the client will listen
+    
+    int client_port = 3333; // Port where the client will listen
 
 
 
@@ -127,25 +126,6 @@ static void udp_server_task()
                 ESP_LOGI(TAG, "Received %d bytes from %s:", len, addr_str);
             }
             ESP_LOGI(TAG, "%s", rx_buffer);
-            // Prepare to send acknowledgment
-                struct sockaddr_in client_addr;
-                client_addr.sin_family = AF_INET;
-                client_addr.sin_port = htons(client_port);
-                client_addr.sin_addr = ((struct sockaddr_in *)&source_addr)->sin_addr;
-                
-
-                const char *ack_message = "Message received";
-            
-            
-            int ack_len = sendto(sock, ack_message, strlen(ack_message), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
-            if (ack_len < 0) {
-                ESP_LOGE(TAG, "Failed to send acknowledgment: errno %d", errno);
-            } else {
-                ESP_LOGI(TAG, "Acknowledgment sent ");
-            }
-
-
-            // Break the loop after successfully receiving a message
             break;
         }
 
@@ -168,10 +148,14 @@ static void udp_server_task()
     ESP_LOGI(TAG, "Wi-Fi driver deintialised");
     // Clean up the task
     vTaskDelete(NULL);
+    ESP_LOGI(TAG, "Still in udp server task ");
+    
+    
 }
 
 static void udp_init()
 {
+    
     ESP_ERROR_CHECK(nvs_flash_init()); // Initialize NVS flash
     ESP_ERROR_CHECK(esp_netif_init()); // Initialize network interface
     ESP_ERROR_CHECK(esp_event_loop_create_default()); // Create default event loop
